@@ -1,9 +1,13 @@
+
+mod game_handler;
+mod utils;
+use game_handler::GameHandler;
 use macroquad::prelude::*;
 
 const WINDOW_TITLE: &str = "Blank Window Template";
-const WINDOW_WIDTH: i32 = 800;
-const WINDOW_HEIGHT: i32 = 600;
-const BACKGROUND_COLOR: Color = LIGHTGRAY;
+const WINDOW_WIDTH: i32 = 640;
+const WINDOW_HEIGHT: i32 = 360;
+const BACKGROUND_COLOR: Color = Color::from_hex(0x5479b0);
 
 fn window_conf() -> Conf {
     Conf {
@@ -26,12 +30,19 @@ async fn main() {
         WINDOW_HEIGHT as f32,
     ));
     render_target_cam.render_target = Some(render_target.clone());
+    let mut fullscreen: bool = false;
 
     // create custom variables
 
+    let mut game_handler = GameHandler::new();
+
     loop {
-        {
-            // do update logic here
+        {  // do update logic here
+            game_handler.update();
+
+            if is_key_pressed(KeyCode::F) { fullscreen = if fullscreen {false} else {true}; set_fullscreen(fullscreen); }
+
+            if is_key_pressed(KeyCode::Escape) { break; }            
         }
 
         let w = WINDOW_WIDTH as f32;
@@ -41,8 +52,8 @@ async fn main() {
         set_camera(&render_target_cam);
         clear_background(BACKGROUND_COLOR);
 
-        {
-            // start drawing here
+        {  // start drawing here
+            game_handler.draw();
         }
 
         set_default_camera();
